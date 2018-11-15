@@ -24,8 +24,10 @@ def trim(im):
     diff = ImageChops.add(diff, diff, 2.0, -100)
     bbox = diff.getbbox()
     # left, upper, right, and lower
+    tp = 25
+    # print(bbox, (bbox[0] - tp, bbox[1] - tp, bbox[2] + tp, bbox[3] + tp))
     if bbox:
-        return im.crop(bbox)
+        return im.crop((bbox[0] - tp, bbox[1] - tp, bbox[2] + tp, bbox[3] + tp))
 
 
 def remove_transparency(im, bg_colour=(255, 255, 255)):
@@ -38,7 +40,7 @@ def remove_transparency(im, bg_colour=(255, 255, 255)):
         # Create a new background image of our matt color.
         # Must be RGBA because paste requires both images have the same format
         # (http://stackoverflow.com/a/8720632  and  http://stackoverflow.com/a/9459208)
-        bg = Image.new("RGBA", im.size, bg_colour + (255,))
+        bg = Image.new("RGB", im.size, bg_colour + (255,))
         bg.paste(im, mask=alpha)
         return bg
 
@@ -64,14 +66,25 @@ def black_white(col):
     return imfile
 
 
+input = './data/initial/'
+output = './data/converted/'
+directory = os.fsencode(input)
 
-im = Image.open("./data/1_1.png")
-im = trim(im)
-im = black_background_thumbnail(im)
-im = remove_transparency(im)
+for file in os.listdir(directory):
+    filename = os.fsdecode(file)
+    if filename.endswith(".png"):
+        im = Image.open(input + filename)
+        im = trim(im)
+        im = black_background_thumbnail(im)
+        im = remove_transparency(im)
+        im = (255 - np.array(im))
+        im = Image.fromarray(im)
 
-size = 28, 28
-outfile = './data/test.png'
-im.thumbnail(size, Image.ANTIALIAS)
-# im = black_white(im)
-im.save(outfile, "PNG")
+        size = 28, 28
+        im.thumbnail(size, Image.ANTIALIAS)
+        # im = black_white(im)
+        im.save(output + filename, "PNG")
+
+        continue
+    else:
+        continue

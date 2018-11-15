@@ -1,15 +1,16 @@
 from keras.datasets import mnist
+import keras
+from tensorflow import nn
 import numpy as np
+from tools import import_images_from_dir
 
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 
-
-from keras import models
-from keras import layers
-
-network = models.Sequential()
-network.add(layers.Dense(512, activation='relu', input_shape=(28 * 28,)))
-network.add(layers.Dense(10, activation='softmax'))
+network = keras.models.Sequential([
+    keras.layers.Dense(512, activation=nn.relu),
+    keras.layers.Dropout(0.2),
+    keras.layers.Dense(10, activation=nn.softmax)
+])
 
 network.compile(optimizer='rmsprop',
                 loss='categorical_crossentropy',
@@ -27,8 +28,17 @@ from keras.utils import to_categorical
 train_labels = to_categorical(train_labels)
 test_labels = to_categorical(test_labels)
 
-network.fit(train_images, train_labels, epochs=2, batch_size=128)
+input = './data/train/'
+own_train_images, own_train_labels = import_images_from_dir(input)
 
+train_images = np.concatenate((train_images, own_train_images), axis=0)
+train_labels = np.concatenate((train_labels, own_train_labels), axis=0)
+
+# print(train_images[0])
+# print(test_labels[0])
+# exit()
+
+network.fit(train_images, train_labels, epochs=10, batch_size=128)
 
 test_loss, test_acc = network.evaluate(test_images, test_labels)
 

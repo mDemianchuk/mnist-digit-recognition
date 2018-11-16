@@ -3,10 +3,6 @@ import numpy as np
 from skimage import io
 
 
-def rgb2gray(rgb):
-    return np.dot(rgb[..., :3], [0.299, 0.587, 0.114])
-
-
 def import_images_from_dir(input):
     allimages = None
     alllabels = None
@@ -15,7 +11,6 @@ def import_images_from_dir(input):
         filename = os.fsdecode(file)
         if filename.endswith(".png"):
             img = io.imread(input + filename)
-            img = rgb2gray(img)
             img = np.array(img).astype('float32')
             img = img / 255
 

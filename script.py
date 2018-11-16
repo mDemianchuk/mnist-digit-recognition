@@ -1,8 +1,6 @@
 from keras.datasets import mnist
 import keras
 from tensorflow import nn
-import numpy as np
-from tools import import_images_from_dir
 
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 
@@ -27,16 +25,6 @@ from keras.utils import to_categorical
 
 train_labels = to_categorical(train_labels)
 test_labels = to_categorical(test_labels)
-
-input = './data/train/'
-own_train_images, own_train_labels = import_images_from_dir(input)
-
-train_images = np.concatenate((train_images, own_train_images), axis=0)
-train_labels = np.concatenate((train_labels, own_train_labels), axis=0)
-
-# print(train_images[0])
-# print(test_labels[0])
-# exit()
 
 network.fit(train_images, train_labels, epochs=10, batch_size=128)
 

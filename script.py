@@ -1,6 +1,18 @@
 from keras.datasets import mnist
 import keras
 from tensorflow import nn
+import numpy as np
+import random as rn
+import tensorflow as tf
+np.random.seed(1337)
+rn.seed(1337)
+tf.set_random_seed(1337) 
+import os
+os.environ['TF_CPP_MINLOGLEVEL']='3'
+os.environ['PYTHONHASHSEED']='0'
+from keras import backend as bke
+s = tf.Session(graph=tf.get_default_graph())       
+bke.set_session(s)
 
 (train_images, train_labels), (test_images, test_labels) = mnist.load_data()
 

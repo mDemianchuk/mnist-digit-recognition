@@ -70,14 +70,14 @@ def remove_transparency(img, bg_colour=(255, 255, 255)):
         return img
 
 
-input = './data/initial/'
-output = './data/converted/'
-directory = os.fsencode(input)
+input_path = './data/initial/'
+output_path = './data/converted/'
+directory = os.fsencode(input_path)
 
 for file in os.listdir(directory):
     filename = os.fsdecode(file)
-    if filename.endswith(".png"):
-        img = Image.open(input + filename)
+    if filename.endswith('.png'):
+        img = Image.open(input_path + filename)
         img = remove_transparency(img)
         img = img.convert('L')
         img = trim(img)
@@ -93,7 +93,6 @@ for file in os.listdir(directory):
 
         # Converts an array back to PIL Image
         img = Image.fromarray(img_arr)
-        img.save(output + filename, "PNG")
-        continue
+        img.save(output_path + filename, 'PNG')
     else:
         continue

@@ -3,3 +3,4 @@ venv
 __pycache__
 testtest.png
 network.h5
+logistic_regression.h5

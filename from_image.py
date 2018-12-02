@@ -41,6 +41,6 @@ input_path = './data/test/'
 digits_path = './data/digits/'
 
 model = load_model('network.h5')
-X_test, y_test = import_images_from_dir(input_path)
+X_test, y_test = import_images_from_dir(input_path, model='sequential')
 evaluate(X_test, num_of_samples=3)
-evaluate_all(X_test, y_test)
+# evaluate_all(X_test, y_test)

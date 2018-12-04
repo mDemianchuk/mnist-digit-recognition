@@ -36,8 +36,6 @@ def import_images_from_dir(path, model):
                 label_list.append(label_arr)
             elif model == LR_MODEL_PATH:
                 label_list.append(int(filename[0]))
-        else:
-            continue
     return np.array(image_list), np.array(label_list)
 
 

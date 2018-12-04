@@ -1,20 +1,26 @@
+from random import randint
+
 import matplotlib.pyplot as plt
 from PIL import Image
 from keras.models import load_model
 
+from constants import IMG_EXTENSION, TEST_PATH, SEQ_MODEL_PATH, DIGITS_PATH, OUTER_BOX
 from tools import import_images_from_dir
 from tools import normalize
 
 
 def evaluate(X_test, num_of_samples):
-    if num_of_samples > X_test.shape[0]:
-        num_of_samples = X_test.shape[0]
+    size = X_test.shape[0]
+    # If specified a number greater than a size of the test set, displaying all images
+    if num_of_samples > size:
+        num_of_samples = size
 
     for i in range(num_of_samples):
-        image = X_test[i]
-        test = normalize(image.reshape(1, 28, 28))
+        rand_index = randint(0, size-1)
+        image = X_test[rand_index]
+        test = normalize(image.reshape(1, OUTER_BOX, OUTER_BOX))
         pred = model.predict(test).argmax()
-        pred_img = Image.open(digits_path + str(pred) + '.png')
+        pred_img = Image.open(DIGITS_PATH + str(pred) + IMG_EXTENSION)
 
         fig = plt.figure()
         fig.add_subplot(1, 2, 1)
@@ -34,13 +40,10 @@ def evaluate(X_test, num_of_samples):
 def evaluate_all(X_test, y_test):
     X_test = normalize(X_test)
     test_loss, test_acc = model.evaluate(X_test, y_test)
-    print(test_acc)
+    print('Accuracy is ' + str(test_acc))
 
 
-input_path = './data/test/'
-digits_path = './data/digits/'
-
-model = load_model('network.h5')
-X_test, y_test = import_images_from_dir(input_path, model='sequential')
-evaluate(X_test, num_of_samples=3)
-# evaluate_all(X_test, y_test)
+model = load_model(SEQ_MODEL_PATH)
+X_test, y_test = import_images_from_dir(TEST_PATH, model=SEQ_MODEL_PATH)
+evaluate(X_test, num_of_samples=20)
+evaluate_all(X_test, y_test)

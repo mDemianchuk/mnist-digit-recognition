@@ -9,11 +9,12 @@ from keras.datasets import mnist
 from keras.utils import to_categorical
 from tensorflow import nn
 
+from constants import SEQ_MODEL_PATH, RAND_SEED
 from tools import normalize
 
-np.random.seed(1337)
-rn.seed(1337)
-tf.set_random_seed(1337)
+np.random.seed(RAND_SEED)
+rn.seed(RAND_SEED)
+tf.set_random_seed(RAND_SEED)
 
 os.environ['TF_CPP_MINLOGLEVEL'] = '3'
 os.environ['PYTHONHASHSEED'] = '0'
@@ -44,5 +45,6 @@ network.fit(train_images, train_labels, epochs=10, batch_size=128)
 
 test_loss, test_acc = network.evaluate(test_images, test_labels)
 
-network.save('network.h5')  # creates a HDF5 file 'my_model.h5'
-print('test_acc:', test_acc)
+# Saving the model into a HDF5 file
+network.save(SEQ_MODEL_PATH)
+print('Accuracy is ' + str(test_acc))

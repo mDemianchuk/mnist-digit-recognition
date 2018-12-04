@@ -1,5 +1,5 @@
 import os
-from constants import CONVERTED_PATH, IMG_EXTENSION, IMG_FORMAT, RGB_MAX
+from constants import CONVERTED_PATH, IMG_EXTENSION, IMG_FORMAT, RGB_MAX, ALPHA
 from PIL import Image, ImageOps
 
 
@@ -17,7 +17,7 @@ def merge_images(image1, image2, horizontal=True):
         result_width = max(width1, width2)
         result_height = height1 + height2
 
-    result = Image.new('RGB', (result_width, result_height), (RGB_MAX, RGB_MAX, RGB_MAX, 255))
+    result = Image.new('RGB', (result_width, result_height), (RGB_MAX, RGB_MAX, RGB_MAX, ALPHA))
     if horizontal:
         result.paste(im=image1, box=(0, 0))
         result.paste(im=image2, box=(width1, 0))

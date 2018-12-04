@@ -10,7 +10,7 @@ from scipy import ndimage
 from skimage import io
 
 from constants import RGB_MAX, IMG_EXTENSION, IMG_SIZE, INNER_BOX, OUTER_BOX, IMG_FORMAT, SEQ_MODEL_PATH, \
-    LR_MODEL_PATH
+    LR_MODEL_PATH, ALPHA
 
 
 def image_to_shape(img):
@@ -36,8 +36,6 @@ def import_images_from_dir(path, model):
                 label_list.append(label_arr)
             elif model == LR_MODEL_PATH:
                 label_list.append(int(filename[0]))
-        else:
-            continue
     return np.array(image_list), np.array(label_list)
 
 
@@ -102,7 +100,7 @@ def remove_transparency(img, bg_color=(RGB_MAX, RGB_MAX, RGB_MAX)):
         # Create a new background image of our matt color.
         # Must be RGBA because paste requires both images have the same format
         # (http://stackoverflow.com/a/8720632  and  http://stackoverflow.com/a/9459208)
-        bg = Image.new('RGB', img.size, bg_color + (RGB_MAX,))
+        bg = Image.new('RGB', img.size, bg_color + (ALPHA,))
         bg.paste(img, mask=alpha)
         return bg
 

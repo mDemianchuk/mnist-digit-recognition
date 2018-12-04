@@ -13,6 +13,5 @@ for file in os.listdir(directory):
         img = Image.open(INITIAL_PATH + filename)
         img = full_conversion(img)
         img.save(CONVERTED_PATH + filename, IMG_FORMAT)
-        continue
     else:
         continue

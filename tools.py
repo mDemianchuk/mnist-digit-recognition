@@ -1,18 +1,22 @@
-import base64, os, math, cv2
+import base64
+import cv2
+import math
+import os
 from io import BytesIO
-from skimage import io
+
 import numpy as np
 from PIL import Image, ImageChops, ImageOps
 from scipy import ndimage
+from skimage import io
 
-RESOLUTION = (28 * 28)
-RGB_MAX = 255
+from constants import RGB_MAX, IMG_EXTENSION, IMG_SIZE, INNER_BOX, OUTER_BOX, IMG_FORMAT, SEQ_MODEL_PATH, \
+    LR_MODEL_PATH
 
 
 def image_to_shape(img):
     img = np.array(img).astype('float32')
-    img = img / 255
-    img = img.reshape(1, 28 * 28)
+    img = img / RGB_MAX
+    img = img.reshape(1, IMG_SIZE)
     return img
 
 
@@ -22,15 +26,15 @@ def import_images_from_dir(path, model):
     directory = os.fsencode(path)
     for file in os.listdir(directory):
         filename = os.fsdecode(file)
-        if filename.endswith(".png"):
+        if filename.endswith(IMG_EXTENSION):
             image = io.imread(path + filename)
             image_list.append(image)
             label = int(filename[0])
-            if model == 'sequential':
+            if model == SEQ_MODEL_PATH:
                 label_arr = np.zeros(10)
                 label_arr[label] = 1
                 label_list.append(label_arr)
-            elif model == 'lr':
+            elif model == LR_MODEL_PATH:
                 label_list.append(int(filename[0]))
         else:
             continue
@@ -38,7 +42,7 @@ def import_images_from_dir(path, model):
 
 
 def normalize(dataset):
-    dataset = dataset.reshape((dataset.shape[0], RESOLUTION))
+    dataset = dataset.reshape((dataset.shape[0], IMG_SIZE))
     dataset = dataset.astype('float32') / RGB_MAX
     return dataset
 
@@ -46,20 +50,20 @@ def normalize(dataset):
 def resize(img_arr):
     rows, cols = img_arr.shape
     if rows > cols:
-        factor = 20.0 / rows
-        rows = 20
+        factor = float(INNER_BOX) / rows
+        rows = INNER_BOX
         cols = int(round(cols * factor))
     else:
-        factor = 20.0 / cols
-        cols = 20
+        factor = float(INNER_BOX) / cols
+        cols = INNER_BOX
         rows = int(round(rows * factor))
 
     # Fits a digit into a 20x20 bounding box
     img_arr = cv2.resize(img_arr, (cols, rows))
 
     # Adds missing rows & columns to get a 28x28 image
-    cols_padding = (int(math.ceil((28 - cols) / 2.0)), int(math.floor((28 - cols) / 2.0)))
-    rows_padding = (int(math.ceil((28 - rows) / 2.0)), int(math.floor((28 - rows) / 2.0)))
+    cols_padding = (int(math.ceil((OUTER_BOX - cols) / 2.0)), int(math.floor((OUTER_BOX - cols) / 2.0)))
+    rows_padding = (int(math.ceil((OUTER_BOX - rows) / 2.0)), int(math.floor((OUTER_BOX - rows) / 2.0)))
     img_arr = np.lib.pad(img_arr, (rows_padding, cols_padding), 'constant')
 
     return img_arr
@@ -88,7 +92,7 @@ def trim(img):
     return img.crop(bbox)
 
 
-def remove_transparency(img, bg_colour=(255, 255, 255)):
+def remove_transparency(img, bg_color=(RGB_MAX, RGB_MAX, RGB_MAX)):
     # Only process if image has transparency (http://stackoverflow.com/a/1963146)
     if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
 
@@ -98,7 +102,7 @@ def remove_transparency(img, bg_colour=(255, 255, 255)):
         # Create a new background image of our matt color.
         # Must be RGBA because paste requires both images have the same format
         # (http://stackoverflow.com/a/8720632  and  http://stackoverflow.com/a/9459208)
-        bg = Image.new("RGB", img.size, bg_colour + (255,))
+        bg = Image.new('RGB', img.size, bg_color + (RGB_MAX,))
         bg.paste(img, mask=alpha)
         return bg
 
@@ -134,7 +138,7 @@ def image_from_b64(data):
 def convert_b64_image(data):
     img = image_from_b64(data)
     buffered = BytesIO()
-    img.save(buffered, format="PNG")
+    img.save(buffered, format=IMG_FORMAT)
     return base64.b64encode(buffered.getvalue())
 
 

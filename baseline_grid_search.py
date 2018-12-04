@@ -6,6 +6,8 @@ from sklearn.datasets import fetch_mldata
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
+from constants import LR_MODEL_PATH, MNIST
+
 
 def grid_search(X_train, X_test, y_train, y_test, c_pow):
     best_params = [0, None, None, None]
@@ -33,7 +35,7 @@ def evaluate(X_train, X_test, y_train, y_test, C, penalty, solver, best_params):
 
 
 # Loading the MNIST dataset
-mnist_df = fetch_mldata('MNIST original')
+mnist_df = fetch_mldata(MNIST)
 
 X_train, X_test, y_train, y_test = train_test_split(
     mnist_df.data, mnist_df.target, test_size=1 / 7.0, random_state=0)
@@ -60,6 +62,5 @@ model = LogisticRegression(C=best_c, penalty=best_penalty, solver=best_solver)
 model.fit(X_train, y_train)
 
 # Saving the model into a HDF5 file
-model_filename = 'logistic_regression.h5'
-with open(model_filename, 'wb') as file:
+with open(LR_MODEL_PATH, 'wb') as file:
     pickle.dump(model, file)

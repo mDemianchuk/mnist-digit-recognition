@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import jsonify
 from flask import request
+from constants import SEQ_MODEL_PATH
 from tools import convert_b64_image, image_from_b64, image_to_shape
 from flask_cors import cross_origin
 from keras.models import load_model
@@ -37,7 +38,7 @@ def classify_image():
         return jsonify({'success': False, 'error': str(err)})
 
 
-model = load_model('network.h5')
+model = load_model(SEQ_MODEL_PATH)
 model._make_predict_function()
 
 if __name__ == "__main__":
